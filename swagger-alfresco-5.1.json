@@ -1,0 +1,1065 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Alfresco Public REST API",
+        "version": "1",
+        "title": "Alfresco Public REST API"
+    },
+    "host": "Gavs-MacBook-Pro-6.local:8080",
+    "basePath": "/alfresco/api/-default-/public/alfresco/versions/1",
+    "tags": [
+        {
+            "name": "nodes",
+            "description": "Retrieve and manage Nodes"
+        },
+        {
+            "name": "sites",
+            "description": "Retrieve and manage Sites"
+        },
+        {
+            "name": "tags",
+            "description": "Retrieve and manage Tags"
+        },
+        {
+            "name": "people",
+            "description": "Retrieve and manage People"
+        }
+    ],
+    "paths": {
+        "/nodes/{nodeId}": {
+            "get": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "Get Node Information",
+                "description": "Get information for the node with id 'nodeId'",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "Updates a node (file or folder) with id 'nodeId'",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "NODE",
+                        "description": "Unique entity properties",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "Name": {
+                                    "type": "string"
+                                },
+                                "Title": {
+                                    "type": "string"
+                                },
+                                "Description": {
+                                    "type": "string"
+                                },
+                                "NodeType": {
+                                    "type": "string"
+                                },
+                                "PrimaryPath": {
+                                    "type": "string"
+                                },
+                                "ModifiedBy": {
+                                    "type": "string"
+                                },
+                                "CreatedBy": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "Delete Node",
+                "description": "Delete the file or folder with id 'nodeId'. Folder will cascade delete",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/nodes/{nodeId}/children": {
+            "get": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "Return a paged list of nodes for the document/folder identified by parentFolderNodeId",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "skipCount",
+                        "in": "query",
+                        "description": "An integer describing how many entities exist in the collection before those included in this list.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "maxItems",
+                        "in": "query",
+                        "description": "The maximum items request to return.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "query",
+                        "description": "The properties parameter is a comma-separated list of property names. You can use the properties parameter to restrict the returned properties.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "Create one (or more) folder(s) as a child of folder identified by parentFolderNodeId",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "FOLDER",
+                        "description": "Unique entity properties",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/nodes/{nodeId}/content": {
+            "get": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "Returns the content for the node with nodeId",
+                "description": "Returns the content for the node with nodeId",
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/nodes/{nodeId}/comments": {
+            "get": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "Returns a paged list of comments for the document/folder identified by nodeId, sorted chronologically with the newest first.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "skipCount",
+                        "in": "query",
+                        "description": "An integer describing how many entities exist in the collection before those included in this list.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "maxItems",
+                        "in": "query",
+                        "description": "The maximum items request to return.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "query",
+                        "description": "The properties parameter is a comma-separated list of property names. You can use the properties parameter to restrict the returned properties.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "Creates comments for the node 'nodeId'.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "COMMENT",
+                        "description": "Unique entity properties",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "content": {
+                                    "type": "string"
+                                },
+                                "Title": {
+                                    "type": "string"
+                                },
+                                "CanEdit": {
+                                    "type": "boolean"
+                                },
+                                "ModifiedBy": {
+                                    "type": "string"
+                                },
+                                "CreatedBy": {
+                                    "type": "string"
+                                },
+                                "CanDelete": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/nodes/{nodeId}/ratings": {
+            "get": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "Get the ratings for node 'nodeId'.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "A single node id",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/nodes/{nodeId}/tags": {
+            "get": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "A paged list of tags on the node 'nodeId'.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "skipCount",
+                        "in": "query",
+                        "description": "An integer describing how many entities exist in the collection before those included in this list.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "maxItems",
+                        "in": "query",
+                        "description": "The maximum items request to return.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "query",
+                        "description": "The properties parameter is a comma-separated list of property names. You can use the properties parameter to restrict the returned properties.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "nodes"
+                ],
+                "summary": "Adds one or more tags to the node with id 'nodeId'.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nodeId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "TAG",
+                        "description": "Unique entity properties",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "Tag": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/people/{personId}": {
+            "get": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "Get Person Information",
+                "description": "Get information for the person with id 'personId'",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The id of the person",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/people/{personId}/activities": {
+            "get": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "List the user's activities, excluding those of other users.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "who",
+                        "in": "query",
+                        "description": "Filter to include the user's activities only ('me'), other user's activities only ('others'), or all activities (don't include the parameter).",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "siteId",
+                        "in": "query",
+                        "description": "Include only activity feed entries relating to this site.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "skipCount",
+                        "in": "query",
+                        "description": "An integer describing how many entities exist in the collection before those included in this list.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "maxItems",
+                        "in": "query",
+                        "description": "The maximum items request to return.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "query",
+                        "description": "The properties parameter is a comma-separated list of property names. You can use the properties parameter to restrict the returned properties.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/people/{personId}/favorite-sites": {
+            "get": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "Get Person Favorite Sites",
+                "description": "Get a person's favorite sites",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "skipCount",
+                        "in": "query",
+                        "description": "An integer describing how many entities exist in the collection before those included in this list.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "maxItems",
+                        "in": "query",
+                        "description": "The maximum items request to return.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "Add Person Favorite Site",
+                "description": "Favorite a site",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "FAVOURITESITE",
+                        "description": "Unique entity properties",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/people/{personId}/favorites": {
+            "get": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "Returns favorites for a person",
+                "description": "Returns favorites for a person",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "Add Person Favorite",
+                "description": "Favorite something",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "FAVOURITE",
+                        "description": "Unique entity properties",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "TargetGuid": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/people/{personId}/networks": {
+            "get": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "Network membership for person 'personId'",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/people/{personId}/preferences": {
+            "get": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "Preference values for person 'personId'.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/people/{personId}/site-membership-requests": {
+            "get": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "The site membership request for personId",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "Create a site membership request for personId and siteIds. The personId will be invited to the site as a SiteConsumer.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "SITEMEMBERSHIPREQUEST",
+                        "description": "Unique entity properties",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "Message": {
+                                    "type": "string"
+                                },
+                                "Id": {
+                                    "type": "string"
+                                },
+                                "Title": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/people/{personId}/sites": {
+            "get": {
+                "tags": [
+                    "people"
+                ],
+                "summary": "Site membership information for 'personId'",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "personId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/sites": {
+            "get": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Returns a list of sites",
+                "description": "",
+                "operationId": "getSites",
+                "parameters": [
+                    {
+                        "name": "skipCount",
+                        "in": "query",
+                        "description": "An integer describing how many entities exist in the collection before those included in this list.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "maxItems",
+                        "in": "query",
+                        "description": "The maximum items request to return.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/sites/{siteId}": {
+            "get": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Returns site information for site siteId.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "siteId",
+                        "in": "path",
+                        "description": "The unique short name for a site",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/sites/{siteId}/containers": {
+            "get": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Site container information for site 'siteId'.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "siteId",
+                        "in": "path",
+                        "description": "The unique short name for a site",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/sites/{siteId}/members": {
+            "get": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Returns site membership information for siteId.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "siteId",
+                        "in": "path",
+                        "description": "The unique short name for a site",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Adds personId as a member of site siteId.",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "siteId",
+                        "in": "path",
+                        "description": "The unique short name for a site",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "SITEMEMBER",
+                        "description": "Unique entity properties",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "Role": {
+                                    "type": "string"
+                                },
+                                "PersonId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/tags/{tagId}": {
+            "get": {
+                "tags": [
+                    "tags"
+                ],
+                "summary": "Return the tag with tagId",
+                "description": "Return the tag with tagId",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "tagId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "tags"
+                ],
+                "summary": "Updates a tag by unique Id",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "tagId",
+                        "in": "path",
+                        "description": "The unique id must be a String. It is returned as an 'id' from the entity",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "TAG",
+                        "description": "Unique entity properties",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "Tag": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        },
+        "/tags": {
+            "get": {
+                "tags": [
+                    "tags"
+                ],
+                "summary": "Returns a list of tags",
+                "description": "",
+                "operationId": "getTags",
+                "parameters": [
+                    {
+                        "name": "skipCount",
+                        "in": "query",
+                        "description": "An integer describing how many entities exist in the collection before those included in this list.",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "maxItems",
+                        "in": "query",
+                        "description": "The maximum items request to return.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                }
+            }
+        }
+    }
+}
