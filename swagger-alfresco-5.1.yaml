@@ -1,11 +1,11 @@
 ---
 swagger: "2.0"
 info:
-  description: "Provides access to the core features of an Alfresco repository."
+  description: "Provides access to the core features of an Alfresco 5.1 repository."
   version: "1"
-  title: "Alfresco REST API"
+  title: "Alfresco REST API (5.1)"
   contact:
-    url: "http://docs.alfresco.com/5.0/pra/1/topics/pra-welcome-aara.html"
+    url: "http://docs.alfresco.com/5.1/pra/1/topics/pra-welcome-aara.html"
 host: "localhost:8080"
 basePath: "/alfresco/api/-default-/public/alfresco/versions/1"
 consumes:
@@ -21,6 +21,12 @@ tags:
   description: "Retrieve and manage Tags"
 - name: "people"
   description: "Retrieve and manage People"
+- name: "comments"
+  description: "Retrieve and manage Comments"
+- name: "workflow"
+  description: "Retrieve and manage Process, Workflow & Tasks"
+- name: "network"
+  description: "Retrieve Network Informations"
 paths:
   /nodes/{nodeId}:
     get:
@@ -38,7 +44,7 @@ paths:
         type: "string"
       responses:
         200:
-          description: "Successful response"
+          description: "Successful responsec"
     put:
       tags:
       - "nodes"
@@ -173,9 +179,11 @@ paths:
     get:
       tags:
       - "nodes"
+      - "comments"
       summary: "Returns a paged list of comments for the document/folder identified\
         \ by nodeId, sorted chronologically with the newest first."
       description: ""
+      operationId: "getComments"
       produces:
       - "application/json"
       parameters:
@@ -205,11 +213,20 @@ paths:
       responses:
         200:
           description: "Successful response"
+          schema:
+            $ref: "#/definitions/CommentPaging"
+        400:
+          description: "If the nodeId exists, but does not identify a folder or a\
+            \ document."
+        404:
+          description: "If nodeId does not exist"
     post:
       tags:
       - "nodes"
+      - "comments"
       summary: "Creates comments for the node 'nodeId'."
       description: ""
+      operationId: "addComment"
       produces:
       - "application/json"
       parameters:
@@ -220,34 +237,88 @@ paths:
         required: true
         type: "string"
       - in: "body"
-        name: "COMMENT"
+        name: "CommentContent"
+        description: "The comment text. Note that you can provide an array of comments."
+        required: true
+        schema:
+          properties:
+            content:
+              type: "string"
+      responses:
+        201:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/CommentEntry"
+        404:
+          description: "If nodeId does not exist"
+  /nodes/{nodeId}/comments/{commentId}:
+    put:
+      tags:
+      - "comments"
+      summary: "Edit comment content"
+      description: "Update an existing comment on a specific node."
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nodeId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      - name: "commentId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "CommentContent"
         description: "Unique entity properties"
         required: true
         schema:
           properties:
-            id:
-              type: "string"
             content:
               type: "string"
-            Title:
-              type: "string"
-            CanEdit:
-              type: "boolean"
-            ModifiedBy:
-              type: "string"
-            CreatedBy:
-              type: "string"
-            CanDelete:
-              type: "boolean"
       responses:
         200:
           description: "Successful response"
+          schema:
+            $ref: "#/definitions/CommentEntry"
+        404:
+          description: "If nodeId or commentId doesn't exist"
+    delete:
+      tags:
+      - "comments"
+      summary: "Removes commentId as a comment of node nodeId."
+      description: "Remove comment"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nodeId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      - name: "commentId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      responses:
+        204:
+          description: "Successful response"
+        404:
+          description: "If nodeId or commentId do not exist"
   /nodes/{nodeId}/ratings:
     get:
       tags:
       - "nodes"
       summary: "Get the ratings for node 'nodeId'."
       description: ""
+      operationId: "getRatings"
       produces:
       - "application/json"
       parameters:
@@ -259,12 +330,105 @@ paths:
       responses:
         200:
           description: "Successful response"
+          schema:
+            $ref: "#/definitions/RatingPaging"
+    post:
+      tags:
+      - "nodes"
+      summary: "Rate the node 'nodeId'."
+      description: ""
+      operationId: "rate"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nodeId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "Rating"
+        required: true
+        schema:
+          properties:
+            id:
+              type: "string"
+              description: "The rating scheme type. Possible values are likes and\
+                \ fiveStar."
+            myRating:
+              type: "string"
+              description: "The rating. The type is specific to the rating scheme,\
+                \ boolean for the likes and an integer for the fiveStar"
+      responses:
+        201:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/RatingEntry"
+        404:
+          description: "If nodeId does not exist"
+  /nodes/{nodeId}/ratings/{ratingId}:
+    get:
+      tags:
+      - "nodes"
+      summary: "Get a specific ratings defined by ratingId for node 'nodeId'."
+      description: ""
+      produces:
+      - "application/json"
+      operationId: "getRating"
+      parameters:
+      - name: "nodeId"
+        in: "path"
+        description: "A single node id"
+        required: true
+        type: "string"
+      - name: "ratingId"
+        in: "path"
+        description: "A single rating id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/RatingEntry"
+        400:
+          description: "If ratingId does not exist"
+        404:
+          description: "If nodeId does not exist"
+    delete:
+      tags:
+      - "nodes"
+      summary: "Removes ratingId as a rating of node nodeId."
+      description: "Remove rating"
+      operationId: "removeRating"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nodeId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      - name: "ratingId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      responses:
+        204:
+          description: "Successful response"
+        404:
+          description: "If nodeId or ratingId do not exist"
   /nodes/{nodeId}/tags:
     get:
       tags:
       - "nodes"
+      - "tags"
       summary: "A paged list of tags on the node 'nodeId'."
-      description: ""
+      description: "Get a list of all tags for a specific node."
       produces:
       - "application/json"
       parameters:
@@ -294,9 +458,14 @@ paths:
       responses:
         200:
           description: "Successful response"
+          schema:
+            $ref: "#/definitions/TagPaging"
+        404:
+          description: "If nodeId does not exist."
     post:
       tags:
       - "nodes"
+      - "tags"
       summary: "Adds one or more tags to the node with id 'nodeId'."
       description: ""
       produces:
@@ -317,8 +486,39 @@ paths:
             Tag:
               type: "string"
       responses:
-        200:
+        201:
           description: "Successful response"
+          schema:
+            $ref: "#/definitions/TagEntry"
+        404:
+          description: "If nodeId does not exist."
+  /nodes/{nodeId}/tags/{tagId}:
+    delete:
+      tags:
+      - "nodes"
+      - "tags"
+      summary: "Removes tagId as a tag of node nodeId."
+      description: "Remove a tag from a specific node."
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nodeId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      - name: "tagId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      responses:
+        204:
+          description: "Successful response"
+        404:
+          description: "If nodeId or tagId do not exist"
   /people/{personId}:
     get:
       tags:
@@ -337,7 +537,7 @@ paths:
         200:
           description: "Successful response"
           schema:
-            $ref: "#/definitions/Person"
+            $ref: "#/definitions/PersonEntry"
   /people/{personId}/activities:
     get:
       tags:
@@ -478,10 +678,55 @@ paths:
       responses:
         200:
           description: "Successful response"
+  /people/{personId}/favorites/{favoriteId}:
+    get:
+      tags:
+      - "people"
+      summary: "Returns favorite information defined by favoriteId for a person defined\
+        \ by personId"
+      description: "Returns favorites for a person"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      - name: "favoriteId"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+    delete:
+      tags:
+      - "people"
+      summary: "Removes favoriteId as a favorite of person personId."
+      description: "Remove favorite"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      - name: "favoriteId"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        204:
+          description: "Successful response"
   /people/{personId}/networks:
     get:
       tags:
       - "people"
+      - "network"
       summary: "Network membership for person 'personId'"
       description: ""
       produces:
@@ -496,6 +741,37 @@ paths:
       responses:
         200:
           description: "Successful response"
+          schema:
+            $ref: "#/definitions/PersonNetworkPaging"
+  /people/{personId}/networks/{networkId}:
+    get:
+      tags:
+      - "people"
+      - "network"
+      summary: "Returns Network Information specified by networkId"
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      - name: "networkId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/PersonNetworkEntry"
+        404:
+          description: "If personId or networkId does not exist."
   /people/{personId}/preferences:
     get:
       tags:
@@ -604,6 +880,8 @@ paths:
       responses:
         200:
           description: "Successful response"
+          schema:
+            $ref: "#/definitions/SitePaging"
   /sites/{siteId}:
     get:
       tags:
@@ -621,7 +899,28 @@ paths:
       responses:
         200:
           description: "Successful response"
+          schema:
+            $ref: "#/definitions/SiteEntry"
   /sites/{siteId}/containers:
+    get:
+      tags:
+      - "sites"
+      summary: "Returns a list of containers information for site identified by 'siteId'."
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "siteId"
+        in: "path"
+        description: "The unique short name for a site"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/SiteContainerPaging"
+  /sites/{siteId}/containers/{containerId}:
     get:
       tags:
       - "sites"
@@ -635,9 +934,16 @@ paths:
         description: "The unique short name for a site"
         required: true
         type: "string"
+      - name: "containerId"
+        in: "path"
+        description: "The unique container Id"
+        required: true
+        type: "string"
       responses:
         200:
           description: "Successful response"
+          schema:
+            $ref: "#/definitions/SiteContainerEntry"
   /sites/{siteId}/members:
     get:
       tags:
@@ -655,6 +961,8 @@ paths:
       responses:
         200:
           description: "Successful response"
+          schema:
+            $ref: "#/definitions/SiteMemberPaging"
     post:
       tags:
       - "sites"
@@ -681,6 +989,114 @@ paths:
       responses:
         200:
           description: "Successful response"
+  /sites/{siteId}/members/{personId}:
+    get:
+      tags:
+      - "sites"
+      summary: "Returns site membership information for siteId and personId."
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "siteId"
+        in: "path"
+        description: "The unique short name for a site"
+        required: true
+        type: "string"
+      - name: "personId"
+        in: "path"
+        description: "The id of the person"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/SiteMemberEntry"
+        404:
+          description: "If siteId or personId does not exist."
+    put:
+      tags:
+      - "sites"
+      summary: "Update the membership of personId in site siteId."
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "siteId"
+        in: "path"
+        description: "The unique short name for a site"
+        required: true
+        type: "string"
+      - name: "personId"
+        in: "path"
+        description: "The id of the person"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "SiteMemberRole"
+        description: "Unique entity properties"
+        required: true
+        schema:
+          properties:
+            role:
+              type: "string"
+      responses:
+        200:
+          description: "Successful response"
+        400:
+          description: "If the role doesn't exist"
+        404:
+          description: "If siteId or personId doesn't exist"
+    delete:
+      tags:
+      - "sites"
+      summary: "Removes personId as a member of site siteId."
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "siteId"
+        in: "path"
+        description: "The unique short name for a site"
+        required: true
+        type: "string"
+      - name: "personId"
+        in: "path"
+        description: "The id of the person"
+        required: true
+        type: "string"
+      responses:
+        204:
+          description: "Successful response"
+        404:
+          description: "If personId doesn't exist"
+  /tags:
+    get:
+      tags:
+      - "tags"
+      summary: "Returns a list of tags"
+      description: ""
+      operationId: "getTags"
+      parameters:
+      - name: "skipCount"
+        in: "query"
+        description: "An integer describing how many entities exist in the collection\
+          \ before those included in this list."
+        required: false
+        type: "integer"
+      - name: "maxItems"
+        in: "query"
+        description: "The maximum items request to return."
+        required: false
+        type: "integer"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/TagPaging"
   /tags/{tagId}:
     get:
       tags:
@@ -701,7 +1117,7 @@ paths:
         200:
           description: "Successful response"
           schema:
-            $ref: "#/definitions/Tag"
+            $ref: "#/definitions/TagEntry"
           examples:
             application/json:
               id: "ed2444b5-d0c1-440b-b5b8-34a53e578091"
@@ -737,13 +1153,38 @@ paths:
       responses:
         200:
           description: "Successful response"
-  /tags:
+          schema:
+            $ref: "#/definitions/TagEntry"
+  /networks/{networkId}:
     get:
       tags:
-      - "tags"
-      summary: "Returns a list of tags"
-      description: ""
-      operationId: "getTags"
+      - "network"
+      summary: "Retrieve information for a specific network."
+      operationId: "getNetwork"
+      parameters:
+      - name: "networkId"
+        in: "path"
+        description: "network's unique id"
+        required: true
+        type: "string"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/PersonNetworkEntry"
+        404:
+          description: "If networkId doesn't exist"
+  /deployments:
+    get:
+      tags:
+      - "workflow"
+      summary: "Returns a paged list of deployments."
+      description: "The authenticated user must have role admin (non-network deployments)\
+        \ or network admin (networks enabled).\nIf networks are enabled, the network\
+        \ admin can only see the deployments in the given network.\n"
+      operationId: "getDeployments"
       parameters:
       - name: "skipCount"
         in: "query"
@@ -760,6 +1201,57 @@ paths:
       - "application/json"
       responses:
         200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/DeploymentPaging"
+  /deployments/{deploymentId}:
+    get:
+      tags:
+      - "workflow"
+      summary: "Returns a specifid deployment defined by deploymentId."
+      description: "The authenticated user must have role admin (non-network deployments)\
+        \ or network admin (networks enabled).\nIf networks is enabled, the deployment\
+        \ is only returned if the deployment is in the given network.\n"
+      operationId: "getDeployment"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "deploymentId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/DeploymentEntry"
+        404:
+          description: "If deploymentId doesn't exist"
+        500:
+          description: "Error response"
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      tags:
+      - "workflow"
+      summary: "Remove a specific deployment."
+      description: "This request will delete the deployment including the tasks, process\
+        \ definitions contained in the deployment. It will also delete processes and\
+        \ history information associated with the deployment."
+      operationId: "removeDeployment"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "deploymentId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      responses:
+        204:
           description: "Successful response"
 definitions:
   Error:
@@ -779,6 +1271,125 @@ definitions:
             type: "string"
           descriptionURL:
             type: "string"
+  Pagination:
+    type: "object"
+    properties:
+      count:
+        type: "integer"
+        format: "int32"
+      hasMoreItems:
+        type: "boolean"
+      totalItems:
+        type: "integer"
+        format: "int64"
+      skipCount:
+        type: "integer"
+        format: "int64"
+      maxItems:
+        type: "integer"
+        format: "int64"
+  SitePaging:
+    type: "object"
+    properties:
+      list:
+        type: "object"
+        properties:
+          pagination:
+            $ref: "#/definitions/Pagination"
+          entries:
+            type: "array"
+            items:
+              type: "object"
+              $ref: "#/definitions/SiteEntry"
+  SiteEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/Site"
+  Site:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      guid:
+        type: "string"
+      title:
+        type: "string"
+      description:
+        type: "string"
+      visibility:
+        type: "string"
+        enum:
+        - "PRIVATE"
+        - "MODERATED"
+        - "PUBLIC"
+      role:
+        type: "string"
+  SiteContainerPaging:
+    type: "object"
+    properties:
+      list:
+        type: "object"
+        properties:
+          pagination:
+            $ref: "#/definitions/Pagination"
+          entries:
+            type: "array"
+            items:
+              type: "object"
+              $ref: "#/definitions/SiteContainerEntry"
+  SiteContainerEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/SiteContainer"
+  SiteContainer:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      folderId:
+        type: "string"
+  SiteMemberPaging:
+    type: "object"
+    properties:
+      list:
+        type: "object"
+        properties:
+          pagination:
+            $ref: "#/definitions/Pagination"
+          entries:
+            type: "array"
+            items:
+              type: "object"
+              $ref: "#/definitions/SiteMemberEntry"
+  SiteMemberEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/SiteMember"
+  SiteMember:
+    type: "object"
+    required:
+    - "id"
+    - "role"
+    properties:
+      id:
+        type: "string"
+      person:
+        type: "object"
+        $ref: "#/definitions/Person"
+      role:
+        type: "string"
+  PersonEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/Person"
   Person:
     type: "object"
     required:
@@ -792,9 +1403,119 @@ definitions:
         type: "string"
       description:
         type: "string"
+      avatarId:
+        type: "string"
+      email:
+        type: "string"
+      skypeId:
+        type: "string"
+      googleId:
+        type: "string"
+      instantMessageId:
+        type: "string"
+      jobTitle:
+        type: "string"
+      location:
+        type: "string"
+      company:
+        type: "object"
+        $ref: "#/definitions/Company"
+      mobile:
+        type: "string"
+      telephone:
+        type: "string"
+      statusUpdatedAt:
+        type: "string"
+        format: "date"
+      userStatus:
+        type: "string"
       enabled:
         type: "boolean"
         default: true
+      emailNotificationsEnabled:
+        type: "boolean"
+  Company:
+    type: "object"
+    properties:
+      organization:
+        type: "string"
+      address1:
+        type: "string"
+      address2:
+        type: "string"
+      address3:
+        type: "string"
+      postcode:
+        type: "string"
+      telephone:
+        type: "string"
+      fax:
+        type: "string"
+      email:
+        type: "string"
+  CommentPaging:
+    type: "object"
+    properties:
+      list:
+        type: "object"
+        properties:
+          pagination:
+            $ref: "#/definitions/Pagination"
+          entries:
+            type: "array"
+            items:
+              type: "object"
+              $ref: "#/definitions/CommentEntry"
+  CommentEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/Comment"
+  Comment:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      content:
+        type: "string"
+      createdBy:
+        type: "object"
+        $ref: "#/definitions/Person"
+      createdAt:
+        type: "string"
+        format: "date"
+      edited:
+        type: "boolean"
+      modifiedBy:
+        type: "object"
+        $ref: "#/definitions/Person"
+      modifiedAt:
+        type: "string"
+        format: "date"
+      canEdit:
+        type: "boolean"
+      canDelete:
+        type: "boolean"
+  TagPaging:
+    type: "object"
+    properties:
+      list:
+        type: "object"
+        properties:
+          pagination:
+            $ref: "#/definitions/Pagination"
+          entries:
+            type: "array"
+            items:
+              type: "object"
+              $ref: "#/definitions/TagEntry"
+  TagEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/Tag"
   Tag:
     type: "object"
     required:
@@ -805,3 +1526,156 @@ definitions:
         type: "string"
       tag:
         type: "string"
+  DeploymentPaging:
+    type: "object"
+    properties:
+      list:
+        type: "object"
+        properties:
+          pagination:
+            $ref: "#/definitions/Pagination"
+          entries:
+            type: "array"
+            items:
+              type: "object"
+              $ref: "#/definitions/DeploymentEntry"
+  DeploymentEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/Deployment"
+  Deployment:
+    type: "object"
+    description: "A deployment resource represents one file inside a deployment.\n\
+      Process files, forms and perhaps some other files are authored in a separate\
+      \ environment. The act of deployment brings them into the runtime workflow engine.\n\
+      A deployment is a collection of files that include all resources to specify\
+      \ one or more process definitions. After deployment, the included process definitions\
+      \ are known to the workflow runtime engine and new processes can be started.\n\
+      Users can then continue to edit the process and other files in their authoring\
+      \ environment like e.g. our eclipse based process editor. A redeployment will\
+      \ result in a complete separate deployment containing new versions of the process\
+      \ definition.\nWhen a process definition inside a new deployment has the same\
+      \ key as an existing process definition, then it is considered a new version\
+      \ of the existing process definition.\n"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      category:
+        type: "string"
+      deployedAt:
+        type: "string"
+        format: "date"
+  PersonNetworkPaging:
+    type: "object"
+    properties:
+      list:
+        type: "object"
+        properties:
+          pagination:
+            $ref: "#/definitions/Pagination"
+          entries:
+            type: "array"
+            items:
+              type: "object"
+              $ref: "#/definitions/PersonNetworkEntry"
+  PersonNetworkEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/PersonNetwork"
+  PersonNetwork:
+    type: "object"
+    description: "A network is the group of users and sites that belong to an organization.\
+      \ Networks are organized by email domain. When a user signs up for an Alfresco\
+      \ account , their email domain becomes their Home Network.\n"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+        description: "This network's unique id"
+      homeNetwork:
+        type: "boolean"
+        description: "Is this the home network?"
+      isEnabled:
+        type: "boolean"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      paidNetwork:
+        type: "boolean"
+      subscriptionLevel:
+        type: "string"
+        enum:
+        - "Free"
+        - "Standard"
+        - "Enterprise"
+      quotas:
+        type: "array"
+        items:
+          type: "object"
+          $ref: "#/definitions/NetworkQuota"
+  NetworkQuota:
+    type: "object"
+    description: "Limits and usage of each quota. A network will have quotas for File\
+      \ space, the number of sites in the network, the number of people in the network,\
+      \ and the number of network administrators\n"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+      limit:
+        type: "integer"
+        format: "int64"
+      usage:
+        type: "integer"
+        format: "int6"
+  RatingPaging:
+    type: "object"
+    properties:
+      list:
+        type: "object"
+        properties:
+          pagination:
+            $ref: "#/definitions/Pagination"
+          entries:
+            type: "array"
+            items:
+              type: "object"
+              $ref: "#/definitions/RatingEntry"
+  RatingEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/Rating"
+  Rating:
+    type: "object"
+    description: "A person can rate an item of content by liking it. They can also\
+      \ remove their like of an item of content. API methods exist to get a list of\
+      \ ratings and to add a new rating.\n"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+      aggregate:
+        type: "object"
+        properties:
+          numberOfRatings:
+            type: "integer"
+          average:
+            type: "integer"
+      ratedAt:
+        type: "string"
+        format: "date-time"
+      myRating:
+        type: "boolean"
