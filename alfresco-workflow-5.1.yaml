@@ -1,0 +1,315 @@
+---
+swagger: "2.0"
+info:
+  description: "Provides access to the workflow features of Alfresco 5.1"
+  version: "1"
+  title: "Alfresco Workflow REST API (5.1)"
+  contact:
+    url: "http://docs.alfresco.com/5.1/pra/1/concepts/pra-resources.html"
+host: "localhost:8080"
+basePath: "/alfresco/api/-default-/public/workflow/versions/1"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+tags:
+- name: "workflow"
+  description: "Retrieve and manage Process, Workflow & Tasks"
+paths:
+  /deployments:
+    get:
+      tags:
+      - "workflow"
+      summary: "Returns a paged list of deployments."
+      description: "The authenticated user must have role admin (non-network deployments)\
+        \ or network admin (networks enabled).\nIf networks are enabled, the network\
+        \ admin can only see the deployments in the given network.\n"
+      operationId: "getDeployments"
+      parameters:
+      - name: "skipCount"
+        in: "query"
+        description: "An integer describing how many entities exist in the collection\
+          \ before those included in this list."
+        required: false
+        type: "integer"
+      - name: "maxItems"
+        in: "query"
+        description: "The maximum items request to return."
+        required: false
+        type: "integer"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/DeploymentPaging"
+  /deployments/{deploymentId}:
+    get:
+      tags:
+      - "workflow"
+      summary: "Returns a specifid deployment defined by deploymentId."
+      description: "The authenticated user must have role admin (non-network deployments)\
+        \ or network admin (networks enabled).\nIf networks is enabled, the deployment\
+        \ is only returned if the deployment is in the given network.\n"
+      operationId: "getDeployment"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "deploymentId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/DeploymentEntry"
+        404:
+          description: "If deploymentId doesn't exist"
+        500:
+          description: "Error response"
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      tags:
+      - "workflow"
+      summary: "Remove a specific deployment."
+      description: "This request will delete the deployment including the tasks, process\
+        \ definitions contained in the deployment. It will also delete processes and\
+        \ history information associated with the deployment."
+      operationId: "removeDeployment"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "deploymentId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      responses:
+        204:
+          description: "Successful response"
+  /process-definitions:
+    get:
+      tags:
+      - "workflow"
+      summary: "Returns a paged list of process definitions."
+      description: "In non-network deployments, any authenticated user will see all\
+        \ the process definitions.\n\nIf networks are enabled, the network admin can\
+        \ only see the deployments in the given network."
+      operationId: "getProcessDefinitions"
+      parameters:
+      - name: "skipCount"
+        in: "query"
+        description: "An integer describing how many entities exist in the collection\
+          \ before those included in this list."
+        required: false
+        type: "integer"
+      - name: "maxItems"
+        in: "query"
+        description: "The maximum items request to return."
+        required: false
+        type: "integer"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/ProcessDefinitionPaging"
+  /process-definitions/{processDefinitionId}:
+    get:
+      tags:
+      - "workflow"
+      summary: "Returns a process definition identified by a process definition id."
+      description: "In non-network deployments, any authenticated user will see all\
+        \ the process definitions.\n\n\nIf networks are enabled, the network admin\
+        \ can only see the deployments in the given network.\n"
+      operationId: "getProcessDefinition"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "processDefinitionId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \ the entity"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/ProcessDefinitionEntry"
+        404:
+          description: "If processDefinitionId doesn't exist"
+        500:
+          description: "Error response"
+          schema:
+            $ref: "#/definitions/Error"
+  /process-definitions/{processDefinitionId}/image:
+    get:
+      tags:
+      - "workflow"
+      summary: "Returns an image that represents a single process definition identified\
+        \ by the process definition id."
+      description: "In non-network deployments, any authenticated user will see all\
+        \ the process definitions.\nIf networks are enabled, the network admin can\
+        \ only see the deployments in the given network.\n"
+      operationId: "getProcessDefinitionImage"
+      produces:
+      - "application/json"
+      - "image/png"
+      parameters:
+      - name: "processDefinitionId"
+        in: "path"
+        description: "The unique id must be a String. It is returned as an 'id' from\
+          \        the entity"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "file"
+        404:
+          description: "If processDefinitionId doesn't exist"
+        500:
+          description: "Error response"
+          schema:
+            $ref: "#/definitions/Error"
+definitions:
+  Error:
+    type: "object"
+    properties:
+      error:
+        type: "object"
+        properties:
+          errorKey:
+            type: "string"
+          statusCode:
+            type: "integer"
+            format: "int32"
+          briefSummary:
+            type: "string"
+          stackTrace:
+            type: "string"
+          descriptionURL:
+            type: "string"
+  Pagination:
+    type: "object"
+    properties:
+      count:
+        type: "integer"
+        format: "int32"
+      hasMoreItems:
+        type: "boolean"
+      totalItems:
+        type: "integer"
+        format: "int64"
+      skipCount:
+        type: "integer"
+        format: "int64"
+      maxItems:
+        type: "integer"
+        format: "int64"
+  DeploymentPaging:
+    type: "object"
+    properties:
+      list:
+        type: "object"
+        properties:
+          pagination:
+            $ref: "#/definitions/Pagination"
+          entries:
+            type: "array"
+            items:
+              type: "object"
+              $ref: "#/definitions/DeploymentEntry"
+  DeploymentEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/Deployment"
+  Deployment:
+    type: "object"
+    description: "A deployment resource represents one file inside a deployment.\n\
+      Process files, forms and perhaps some other files are authored in a separate\
+      \ environment. The act of deployment brings them into the runtime workflow engine.\n\
+      A deployment is a collection of files that include all resources to specify\
+      \ one or more process definitions. After deployment, the included process definitions\
+      \ are known to the workflow runtime engine and new processes can be started.\n\
+      Users can then continue to edit the process and other files in their authoring\
+      \ environment like e.g. our eclipse based process editor. A redeployment will\
+      \ result in a complete separate deployment containing new versions of the process\
+      \ definition.\nWhen a process definition inside a new deployment has the same\
+      \ key as an existing process definition, then it is considered a new version\
+      \ of the existing process definition.\n"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      category:
+        type: "string"
+      deployedAt:
+        type: "string"
+        format: "date"
+  ProcessDefinitionPaging:
+    type: "object"
+    properties:
+      list:
+        type: "object"
+        properties:
+          pagination:
+            $ref: "#/definitions/Pagination"
+          entries:
+            type: "array"
+            items:
+              type: "object"
+              $ref: "#/definitions/ProcessDefinitionEntry"
+  ProcessDefinitionEntry:
+    type: "object"
+    properties:
+      entry:
+        type: "object"
+        $ref: "#/definitions/ProcessDefinition"
+  ProcessDefinition:
+    type: "object"
+    description: "A process definition is a description of an execution flow in terms\
+      \ of activities. New processes are created and started for a process definition.\n"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+        description: "The unique id of this process definition"
+      key:
+        type: "string"
+        description: "The key of this process definition"
+      name:
+        type: "string"
+        description: "The name of this process definition"
+      category:
+        type: "string"
+        description: "The category to which this process definition belongs"
+      deploymentId:
+        type: "string"
+        description: "The deployment of which this process definition is a part"
+      title:
+        type: "string"
+        description: "The title of this process definition"
+      description:
+        type: "string"
+        description: "The description of this process definition"
+      startFormResourceKey:
+        type: "string"
+        description: "The start form key"
+      graphicNotationDefined:
+        type: "boolean"
