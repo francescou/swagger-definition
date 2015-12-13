@@ -24,7 +24,7 @@ tags:
 - name: "comments"
   description: "Retrieve and manage Comments"
 - name: "network"
-  description: "Retrieve Network Informations"
+  description: "Retrieve and manage Networks"
 paths:
   /nodes/{nodeId}/comments:
     get:
