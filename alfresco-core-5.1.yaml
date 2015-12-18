@@ -23,7 +23,7 @@ tags:
   description: "Retrieve and manage People"
 - name: "comments"
   description: "Retrieve and manage Comments"
-- name: "network"
+- name: "networks"
   description: "Retrieve and manage Networks"
 paths:
   /nodes/{nodeId}/comments:
@@ -207,6 +207,10 @@ paths:
               type: "string"
               description: "The rating scheme type. Possible values are likes and\
                 \ fiveStar."
+              default: "likes"
+              enum:
+              - "likes"
+              - "fiveStar"
             myRating:
               type: "string"
               description: "The rating. The type is specific to the rating scheme,\
@@ -439,7 +443,8 @@ paths:
     get:
       tags:
       - "people"
-      summary: "Get Person Favorite Sites"
+      summary: "Get a person's favorite sites. Please note that this method is deprecated\
+        \ and will be removed in the future, use '/people/{personId}/favorties' instead"
       description: "Get a person's favorite sites"
       produces:
       - "application/json"
@@ -467,7 +472,8 @@ paths:
     post:
       tags:
       - "people"
-      summary: "Add Person Favorite Site"
+      summary: "Add Person Favorite Site. Please note that this method is deprecated\
+        \ and will be removed in the future, use '/people/{personId}/favorties' instead"
       description: "Favorite a site"
       produces:
       - "application/json"
@@ -479,13 +485,64 @@ paths:
         required: true
         type: "string"
       - in: "body"
-        name: "FAVOURITESITE"
+        name: "FAVORITESITE"
         description: "Unique entity properties"
         required: true
         schema: {}
       responses:
         200:
           description: "Successful response"
+  /people/{personId}/favorite-sites/{siteId}:
+    get:
+      tags:
+      - "people"
+      summary: "Returns site information of a person's favorite site. Please note\
+        \ that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties'\
+        \ instead"
+      description: "Returns site information of a person's favorite site"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "The id of the person"
+        required: true
+        type: "string"
+      - name: "siteId"
+        in: "path"
+        description: "The id of the site"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+        404:
+          description: "If personId or siteId do not exist"
+    delete:
+      tags:
+      - "people"
+      summary: "Removes a site from a person's list of favorite sites. Please note\
+        \ that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties'\
+        \ instead"
+      description: "Removes a site from a person's list of favorite sites"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "The id of the person"
+        required: true
+        type: "string"
+      - name: "siteId"
+        in: "path"
+        description: "The id of the site"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+        404:
+          description: "If personId or siteId do not exist"
   /people/{personId}/favorites:
     get:
       tags:
@@ -519,7 +576,7 @@ paths:
         required: true
         type: "string"
       - in: "body"
-        name: "FAVOURITE"
+        name: "FAVORITE"
         description: "Unique entity properties"
         required: true
         schema:
@@ -577,7 +634,7 @@ paths:
     get:
       tags:
       - "people"
-      - "network"
+      - "networks"
       summary: "Network membership for person 'personId'"
       description: ""
       produces:
@@ -598,7 +655,7 @@ paths:
     get:
       tags:
       - "people"
-      - "network"
+      - "networks"
       summary: "Returns Network Information specified by networkId"
       description: ""
       produces:
@@ -641,10 +698,33 @@ paths:
       responses:
         200:
           description: "Successful response"
+  /people/{personId}/preferences/{preferenceName}:
+    get:
+      tags:
+      - "people"
+      summary: "Returns a specific preference for a person"
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "The id of the person"
+        required: true
+        type: "string"
+      - name: "preferenceName"
+        in: "path"
+        description: "The name of the preference"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
   /people/{personId}/site-membership-requests:
     get:
       tags:
       - "people"
+      - "sites"
       summary: "The site membership request for personId"
       description: ""
       produces:
@@ -662,6 +742,7 @@ paths:
     post:
       tags:
       - "people"
+      - "sites"
       summary: "Create a site membership request for personId and siteIds. The personId\
         \ will be invited to the site as a SiteConsumer."
       description: ""
@@ -680,12 +761,81 @@ paths:
         required: true
         schema:
           properties:
-            Message:
+            message:
               type: "string"
-            Id:
+            id:
               type: "string"
-            Title:
+            title:
               type: "string"
+      responses:
+        200:
+          description: "Successful response"
+  /people/{personId}/site-membership-requests/{siteId}:
+    get:
+      tags:
+      - "people"
+      - "sites"
+      summary: "Return a person's site membership request for a site"
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "The id of the person"
+        required: true
+        type: "string"
+      - name: "siteId"
+        in: "path"
+        description: "The id of the site"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+    put:
+      tags:
+      - "people"
+      - "sites"
+      summary: "Updates the message for a person's site membership request for a site"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "The id of the person"
+        required: true
+        type: "string"
+      - name: "siteId"
+        in: "path"
+        description: "The id of the site"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+    delete:
+      tags:
+      - "people"
+      - "sites"
+      summary: "Cancel's a person's site membership request for a site"
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personId"
+        in: "path"
+        description: "The id of the person"
+        required: true
+        type: "string"
+      - name: "siteId"
+        in: "path"
+        description: "The id of the site"
+        required: true
+        type: "string"
       responses:
         200:
           description: "Successful response"
@@ -693,6 +843,7 @@ paths:
     get:
       tags:
       - "people"
+      - "sites"
       summary: "Site membership information for 'personId'"
       description: ""
       produces:
@@ -1009,7 +1160,7 @@ paths:
   /networks/{networkId}:
     get:
       tags:
-      - "network"
+      - "networks"
       summary: "Retrieve information for a specific network."
       operationId: "getNetwork"
       parameters:
