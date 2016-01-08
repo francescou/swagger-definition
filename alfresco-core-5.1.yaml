@@ -1,4 +1,3 @@
----
 swagger: "2.0"
 info:
   description: "Provides access to the core features of Alfresco 5.1"
@@ -9,1553 +8,1288 @@ info:
 host: "localhost:8080"
 basePath: "/alfresco/api/-default-/public/alfresco/versions/1"
 consumes:
-- "application/json"
+  - "application/json"
 produces:
-- "application/json"
+  - "application/json"
 tags:
-- name: "nodes"
-  description: "Retrieve and manage Nodes"
-- name: "sites"
-  description: "Retrieve and manage Sites"
-- name: "tags"
-  description: "Retrieve and manage Tags"
-- name: "people"
-  description: "Retrieve and manage People"
-- name: "comments"
-  description: "Retrieve and manage Comments"
-- name: "networks"
-  description: "Retrieve and manage Networks"
+  - name: "nodes"
+    description: "Retrieve and manage Nodes"
+  - name: "sites"
+    description: "Retrieve and manage Sites"
+  - name: "tags"
+    description: "Retrieve and manage Tags"
+  - name: "people"
+    description: "Retrieve and manage People"
+  - name: "comments"
+    description: "Retrieve and manage Comments"
+  - name: "networks"
+    description: "Retrieve and manage Networks"
+parameters:
+  nodeIdParam:
+    name: "nodeId"
+    in: "path"
+    description: "The identifier of a node."
+    required: true
+    type: "string"
+  personIdParam:
+    name: "personId"
+    in: "path"
+    description: "The identifier of a person."
+    required: true
+    type: "string"
+  siteIdParam:
+    name: "siteId"
+    in: "path"
+    description: "The identifier of a site."
+    required: true
+    type: "string"
+  tagIdParam:
+    name: "tagId"
+    in: "path"
+    description: "The identifier of a tag."
+    required: true
+    type: "string"
+  networkIdParam:
+    name: "networkId"
+    in: "path"
+    description: "The identifier of a network."
+    required: true
+    type: "string"
+  skipCountParam:
+    name: "skipCount"
+    in: "query"
+    description: "An integer describing how many entities exist in the collection before those included in this list."
+    required: false
+    type: "integer"
+  maxItemsParam:
+    name: "maxItems"
+    in: "query"
+    description: "The maximum items request to return."
+    required: false
+    type: "integer"
+  propertiesParam:
+    name: "properties"
+    in: "query"
+    description: "The properties parameter is a comma-separated list of property names. You can use the properties parameter to restrict the returned properties."
+    required: false
+    type: "integer"
 paths:
   /nodes/{nodeId}/comments:
     get:
       tags:
-      - "nodes"
-      - "comments"
-      summary: "Returns a paged list of comments for the document/folder identified\
-        \ by nodeId, sorted chronologically with the newest first."
-      description: ""
-      operationId: "getComments"
+        - nodes
+        - comments
+      summary: "Returns a paged list of comments"
+      description: "Returns a paged list of comments for the document/folder identified by nodeId, sorted chronologically with the newest first."
+      operationId: getComments
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "skipCount"
-        in: "query"
-        description: "An integer describing how many entities exist in the collection\
-          \ before those included in this list."
-        required: false
-        type: "integer"
-      - name: "maxItems"
-        in: "query"
-        description: "The maximum items request to return."
-        required: false
-        type: "integer"
-      - name: "properties"
-        in: "query"
-        description: "The properties parameter is a comma-separated list of property\
-          \ names. You can use the properties parameter to restrict the returned properties."
-        required: false
-        type: "integer"
+        - $ref: "#/parameters/nodeIdParam"
+        - $ref: "#/parameters/skipCountParam"
+        - $ref: "#/parameters/maxItemsParam"
+        - $ref: "#/parameters/propertiesParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/CommentPaging"
-        400:
-          description: "If the nodeId exists, but does not identify a folder or a\
-            \ document."
-        404:
-          description: "If nodeId does not exist"
+            $ref: '#/definitions/CommentPaging'
+        '400':
+          description: 'If the nodeId exists, but does not identify a folder or a document.'
+        '404':
+          description: If nodeId does not exist
     post:
       tags:
-      - "nodes"
-      - "comments"
+        - nodes
+        - comments
       summary: "Creates comments for the node 'nodeId'."
-      description: ""
-      operationId: "addComment"
+      description: ''
+      operationId: addComment
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "CommentContent"
-        description: "The comment text. Note that you can provide an array of comments."
-        required: true
-        schema:
-          properties:
-            content:
-              type: "string"
-      responses:
-        201:
-          description: "Successful response"
+        - $ref: "#/parameters/nodeIdParam"
+        - in: body
+          name: CommentContent
+          description: The comment text. Note that you can provide an array of comments.
+          required: true
           schema:
-            $ref: "#/definitions/CommentEntry"
-        404:
-          description: "If nodeId does not exist"
-  /nodes/{nodeId}/comments/{commentId}:
+            properties:
+              content:
+                type: string
+      responses:
+        '201':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/CommentEntry'
+        '404':
+          description: If nodeId does not exist
+  '/nodes/{nodeId}/comments/{commentId}':
     put:
       tags:
-      - "comments"
-      summary: "Edit comment content"
-      description: "Update an existing comment on a specific node."
+        - comments
+      summary: Edit comment content
+      description: Update an existing comment on a specific node.
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "commentId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "CommentContent"
-        description: "Unique entity properties"
-        required: true
-        schema:
-          properties:
-            content:
-              type: "string"
+        - $ref: "#/parameters/nodeIdParam"
+        - name: "commentId"
+          in: "path"
+          description: "The identifier of a comment."
+          required: true
+          type: "string"
+        - in: "body"
+          name: "CommentContent"
+          description: "The JSON representing the comment to be created."
+          required: true
+          schema:
+            properties:
+              content:
+                type: "string"
       responses:
-        200:
+        '200':
           description: "Successful response"
           schema:
-            $ref: "#/definitions/CommentEntry"
-        404:
+            $ref: '#/definitions/CommentEntry'
+        '404':
           description: "If nodeId or commentId doesn't exist"
     delete:
       tags:
-      - "comments"
-      summary: "Removes commentId as a comment of node nodeId."
-      description: "Remove comment"
+        - comments
+      summary: Removes commentId as a comment of node nodeId.
+      description: Remove comment
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "commentId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/nodeIdParam"
+        - name: "commentId"
+          in: "path"
+          description: "The identifier of a comment."
+          required: true
+          type: "string"
       responses:
-        204:
+        '204':
           description: "Successful response"
-        404:
+        '404':
           description: "If nodeId or commentId do not exist"
-  /nodes/{nodeId}/ratings:
+  '/nodes/{nodeId}/ratings':
     get:
       tags:
-      - "nodes"
+        - nodes
       summary: "Get the ratings for node 'nodeId'."
-      description: ""
-      operationId: "getRatings"
+      description: ''
+      operationId: getRatings
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "A single node id"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/nodeIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/RatingPaging"
+            $ref: '#/definitions/RatingPaging'
     post:
       tags:
-      - "nodes"
+        - nodes
       summary: "Rate the node 'nodeId'."
-      description: ""
-      operationId: "rate"
+      description: ''
+      operationId: rate
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "Rating"
-        required: true
-        schema:
-          properties:
-            id:
-              type: "string"
-              description: "The rating scheme type. Possible values are likes and\
-                \ fiveStar."
-              default: "likes"
-              enum:
-              - "likes"
-              - "fiveStar"
-            myRating:
-              type: "string"
-              description: "The rating. The type is specific to the rating scheme,\
-                \ boolean for the likes and an integer for the fiveStar"
-      responses:
-        201:
-          description: "Successful response"
+        - $ref: "#/parameters/nodeIdParam"
+        - in: body
+          name: Rating
+          required: true
           schema:
-            $ref: "#/definitions/RatingEntry"
-        404:
-          description: "If nodeId does not exist"
-  /nodes/{nodeId}/ratings/{ratingId}:
+            properties:
+              id:
+                type: string
+                description: The rating scheme type. Possible values are likes and fiveStar.
+                default: likes
+                enum:
+                  - likes
+                  - fiveStar
+              myRating:
+                type: string
+                description: 'The rating. The type is specific to the rating scheme, boolean for the likes and an integer for the fiveStar'
+      responses:
+        '201':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/RatingEntry'
+        '404':
+          description: If nodeId does not exist
+  '/nodes/{nodeId}/ratings/{ratingId}':
     get:
       tags:
-      - "nodes"
+        - nodes
       summary: "Get a specific ratings defined by ratingId for node 'nodeId'."
-      description: ""
+      description: ''
       produces:
-      - "application/json"
-      operationId: "getRating"
+        - application/json
+      operationId: getRating
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "A single node id"
-        required: true
-        type: "string"
-      - name: "ratingId"
-        in: "path"
-        description: "A single rating id"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/nodeIdParam"
+        - name: "ratingId"
+          in: "path"
+          description: "The identifier of a rating."
+          required: true
+          type: "string"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/RatingEntry"
-        400:
-          description: "If ratingId does not exist"
-        404:
-          description: "If nodeId does not exist"
+            $ref: '#/definitions/RatingEntry'
+        '400':
+          description: If ratingId does not exist
+        '404':
+          description: If nodeId does not exist
     delete:
       tags:
-      - "nodes"
-      summary: "Removes ratingId as a rating of node nodeId."
-      description: "Remove rating"
-      operationId: "removeRating"
+        - nodes
+      summary: Removes ratingId as a rating of node nodeId.
+      description: Remove rating
+      operationId: removeRating
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "ratingId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/nodeIdParam"
+        - name: "ratingId"
+          in: "path"
+          description: "The identifier of a rating."
+          required: true
+          type: "string"
       responses:
-        204:
-          description: "Successful response"
-        404:
-          description: "If nodeId or ratingId do not exist"
+        '204':
+          description: Successful response
+        '404':
+          description: If nodeId or ratingId do not exist
   /nodes/{nodeId}/tags:
     get:
       tags:
-      - "nodes"
-      - "tags"
-      summary: "A paged list of tags on the node 'nodeId'."
-      description: "Get a list of all tags for a specific node."
+        - "nodes"
+        - "tags"
+      summary: "Returns a paged list of tags for a node"
+      description: "Returns a paged list of tags for the node with an id of nodeId."
       produces:
-      - "application/json"
+        - "application/json"
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "skipCount"
-        in: "query"
-        description: "An integer describing how many entities exist in the collection\
-          \ before those included in this list."
-        required: false
-        type: "integer"
-      - name: "maxItems"
-        in: "query"
-        description: "The maximum items request to return."
-        required: false
-        type: "integer"
-      - name: "properties"
-        in: "query"
-        description: "The properties parameter is a comma-separated list of property\
-          \ names. You can use the properties parameter to restrict the returned properties."
-        required: false
-        type: "integer"
+        - $ref: "#/parameters/nodeIdParam"
+        - $ref: "#/parameters/skipCountParam"
+        - $ref: "#/parameters/maxItemsParam"
+        - $ref: "#/parameters/propertiesParam"
       responses:
-        200:
+        '200':
           description: "Successful response"
           schema:
             $ref: "#/definitions/TagPaging"
-        404:
+        '404':
           description: "If nodeId does not exist."
     post:
       tags:
-      - "nodes"
-      - "tags"
+        - "nodes"
+        - "tags"
       summary: "Adds one or more tags to the node with id 'nodeId'."
-      description: ""
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "TAG"
-        description: "Unique entity properties"
-        required: true
-        schema:
-          properties:
-            Tag:
-              type: "string"
-      responses:
-        201:
-          description: "Successful response"
+        - $ref: "#/parameters/nodeIdParam"
+        - in: body
+          name: TagBody
+          description: Unique entity properties
+          required: true
           schema:
-            $ref: "#/definitions/TagEntry"
-        404:
-          description: "If nodeId does not exist."
-  /nodes/{nodeId}/tags/{tagId}:
+            properties:
+              Tag:
+                type: string
+      responses:
+        '201':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/TagEntry'
+        '404':
+          description: If nodeId does not exist.
+  '/nodes/{nodeId}/tags/{tagId}':
     delete:
       tags:
-      - "nodes"
-      - "tags"
-      summary: "Removes tagId as a tag of node nodeId."
-      description: "Remove a tag from a specific node."
+        - nodes
+        - tags
+      summary: Removes tagId as a tag of node nodeId.
+      description: Remove a tag from a specific node.
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "nodeId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "tagId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/nodeIdParam"
+        - $ref: "#/parameters/tagIdParam"
       responses:
-        204:
-          description: "Successful response"
-        404:
-          description: "If nodeId or tagId do not exist"
-  /people/{personId}:
+        '204':
+          description: Successful response
+        '404':
+          description: If nodeId or tagId do not exist
+  '/people/{personId}':
     get:
       tags:
-      - "people"
-      summary: "Get Person Information"
+        - people
+      summary: Get Person Information
       description: "Get information for the person with id 'personId'"
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The id of the person"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/PersonEntry"
-  /people/{personId}/activities:
+            $ref: '#/definitions/PersonEntry'
+  '/people/{personId}/activities':
     get:
       tags:
-      - "people"
+        - people
       summary: "List the user's activities, excluding those of other users."
-      description: ""
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "who"
-        in: "query"
-        description: "Filter to include the user's activities only ('me'), other user's\
-          \ activities only ('others'), or all activities (don't include the parameter)."
-        required: false
-        type: "string"
-      - name: "siteId"
-        in: "query"
-        description: "Include only activity feed entries relating to this site."
-        required: false
-        type: "string"
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "skipCount"
-        in: "query"
-        description: "An integer describing how many entities exist in the collection\
-          \ before those included in this list."
-        required: false
-        type: "integer"
-      - name: "maxItems"
-        in: "query"
-        description: "The maximum items request to return."
-        required: false
-        type: "integer"
-      - name: "properties"
-        in: "query"
-        description: "The properties parameter is a comma-separated list of property\
-          \ names. You can use the properties parameter to restrict the returned properties."
-        required: false
-        type: "integer"
+        - $ref: "#/parameters/personIdParam"
+        - $ref: "#/parameters/skipCountParam"
+        - $ref: "#/parameters/maxItemsParam"
+        - $ref: "#/parameters/propertiesParam"
+        - name: "who"
+          in: "query"
+          description: "Filter to include the user's activities only ('me'), other user's activities only ('others'), or all activities (don't include the parameter)."
+          required: false
+          type: "string"
+        - name: "siteId"
+          in: "query"
+          description: "Include only activity feed entries relating to this site."
+          required: false
+          type: "string"
       responses:
-        200:
-          description: "Successful response"
-  /people/{personId}/favorite-sites:
+        '200':
+          description: Successful response
+  '/people/{personId}/favorite-sites':
     get:
       tags:
-      - "people"
-      summary: "Get a person's favorite sites. Please note that this method is deprecated\
-        \ and will be removed in the future, use '/people/{personId}/favorties' instead"
+        - people
+      summary: "Get a person's favorite sites. Please note that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties' instead"
       description: "Get a person's favorite sites"
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "skipCount"
-        in: "query"
-        description: "An integer describing how many entities exist in the collection\
-          \ before those included in this list."
-        required: false
-        type: "integer"
-      - name: "maxItems"
-        in: "query"
-        description: "The maximum items request to return."
-        required: false
-        type: "integer"
+        - $ref: "#/parameters/personIdParam"
+        - $ref: "#/parameters/skipCountParam"
+        - $ref: "#/parameters/maxItemsParam"
+        - $ref: "#/parameters/propertiesParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
     post:
       tags:
-      - "people"
-      summary: "Add Person Favorite Site. Please note that this method is deprecated\
-        \ and will be removed in the future, use '/people/{personId}/favorties' instead"
-      description: "Favorite a site"
+        - people
+      summary: "Add Person Favorite Site. Please note that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties' instead"
+      description: Favorite a site
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "FAVORITESITE"
-        description: "Unique entity properties"
-        required: true
-        schema: {}
+        - $ref: "#/parameters/personIdParam"
+        - in: body
+          name: FAVORITESITE
+          description: Unique entity properties
+          required: true
+          schema: {}
       responses:
-        200:
-          description: "Successful response"
-  /people/{personId}/favorite-sites/{siteId}:
+        '200':
+          description: Successful response
+  '/people/{personId}/favorite-sites/{siteId}':
     get:
       tags:
-      - "people"
-      summary: "Returns site information of a person's favorite site. Please note\
-        \ that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties'\
-        \ instead"
+        - people
+      summary: "Returns site information of a person's favorite site. Please note that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties' instead"
       description: "Returns site information of a person's favorite site"
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The id of the person"
-        required: true
-        type: "string"
-      - name: "siteId"
-        in: "path"
-        description: "The id of the site"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - $ref: "#/parameters/siteIdParam"
       responses:
-        200:
-          description: "Successful response"
-        404:
-          description: "If personId or siteId do not exist"
+        '200':
+          description: Successful response
+        '404':
+          description: If personId or siteId do not exist
     delete:
       tags:
-      - "people"
-      summary: "Removes a site from a person's list of favorite sites. Please note\
-        \ that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties'\
-        \ instead"
+        - people
+      summary: "Removes a site from a person's list of favorite sites. Please note that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties' instead"
       description: "Removes a site from a person's list of favorite sites"
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The id of the person"
-        required: true
-        type: "string"
-      - name: "siteId"
-        in: "path"
-        description: "The id of the site"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - $ref: "#/parameters/siteIdParam"
       responses:
-        200:
-          description: "Successful response"
-        404:
-          description: "If personId or siteId do not exist"
-  /people/{personId}/favorites:
+        '200':
+          description: Successful response
+        '404':
+          description: If personId or siteId do not exist
+  '/people/{personId}/favorites':
     get:
       tags:
-      - "people"
-      summary: "Returns favorites for a person"
-      description: "Returns favorites for a person"
+        - people
+      summary: Returns favorites for a person
+      description: Returns favorites for a person
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
     post:
       tags:
-      - "people"
-      summary: "Add Person Favorite"
-      description: "Favorite something"
+        - people
+      summary: Add Person Favorite
+      description: Favorite something
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "FAVORITE"
-        description: "Unique entity properties"
-        required: true
-        schema:
-          properties:
-            TargetGuid:
-              type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - in: body
+          name: FAVORITE
+          description: Unique entity properties
+          required: true
+          schema:
+            properties:
+              targetGuid:
+                type: string
       responses:
-        200:
-          description: "Successful response"
-  /people/{personId}/favorites/{favoriteId}:
+        '200':
+          description: Successful response
+  '/people/{personId}/favorites/{favoriteId}':
     get:
       tags:
-      - "people"
-      summary: "Returns favorite information defined by favoriteId for a person defined\
-        \ by personId"
-      description: "Returns favorites for a person"
+        - people
+      summary: Returns favorite information defined by favoriteId for a person defined by personId
+      description: Returns favorites for a person
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "favoriteId"
-        in: "path"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - name: "favoriteId"
+          in: "path"
+          required: true
+          type: "string"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
     delete:
       tags:
-      - "people"
-      summary: "Removes favoriteId as a favorite of person personId."
-      description: "Remove favorite"
+        - people
+      summary: Removes favoriteId as a favorite of person personId.
+      description: Remove favorite
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "favoriteId"
-        in: "path"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - name: "favoriteId"
+          in: "path"
+          required: true
+          type: "string"
       responses:
-        204:
-          description: "Successful response"
-  /people/{personId}/networks:
+        '204':
+          description: Successful response
+  '/people/{personId}/networks':
     get:
       tags:
-      - "people"
-      - "networks"
+        - people
+        - networks
       summary: "Network membership for person 'personId'"
-      description: ""
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/PersonNetworkPaging"
-  /people/{personId}/networks/{networkId}:
+            $ref: '#/definitions/PersonNetworkPaging'
+  '/people/{personId}/networks/{networkId}':
     get:
       tags:
-      - "people"
-      - "networks"
-      summary: "Returns Network Information specified by networkId"
-      description: ""
+        - people
+        - networks
+      summary: Returns Network Information specified by networkId
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - name: "networkId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - $ref: "#/parameters/networkIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/PersonNetworkEntry"
-        404:
-          description: "If personId or networkId does not exist."
-  /people/{personId}/preferences:
+            $ref: '#/definitions/PersonNetworkEntry'
+        '404':
+          description: If personId or networkId does not exist.
+  '/people/{personId}/preferences':
     get:
       tags:
-      - "people"
+        - people
       summary: "Preference values for person 'personId'."
-      description: ""
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
       responses:
-        200:
-          description: "Successful response"
-  /people/{personId}/preferences/{preferenceName}:
+        '200':
+          description: Successful response
+  '/people/{personId}/preferences/{preferenceName}':
     get:
       tags:
-      - "people"
-      summary: "Returns a specific preference for a person"
-      description: ""
+        - people
+      summary: Returns a specific preference for a person
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The id of the person"
-        required: true
-        type: "string"
-      - name: "preferenceName"
-        in: "path"
-        description: "The name of the preference"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - name: "preferenceName"
+          in: "path"
+          description: "The name of the preference."
+          required: true
+          type: "string"
       responses:
-        200:
-          description: "Successful response"
-  /people/{personId}/site-membership-requests:
+        '200':
+          description: Successful response
+  '/people/{personId}/site-membership-requests':
     get:
       tags:
-      - "people"
-      - "sites"
-      summary: "The site membership request for personId"
-      description: ""
+        - people
+        - sites
+      summary: The site membership request for personId
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
     post:
       tags:
-      - "people"
-      - "sites"
-      summary: "Create a site membership request for personId and siteIds. The personId\
-        \ will be invited to the site as a SiteConsumer."
-      description: ""
+        - people
+        - sites
+      summary: Create a site membership request for personId and siteIds. The personId will be invited to the site as a SiteConsumer.
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "SITEMEMBERSHIPREQUEST"
-        description: "Unique entity properties"
-        required: true
-        schema:
-          properties:
-            message:
-              type: "string"
-            id:
-              type: "string"
-            title:
-              type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - in: body
+          name: SITEMEMBERSHIPREQUEST
+          description: Unique entity properties
+          required: true
+          schema:
+            properties:
+              message:
+                type: string
+              id:
+                type: string
+              title:
+                type: string
       responses:
-        200:
-          description: "Successful response"
-  /people/{personId}/site-membership-requests/{siteId}:
+        '200':
+          description: Successful response
+  '/people/{personId}/site-membership-requests/{siteId}':
     get:
       tags:
-      - "people"
-      - "sites"
+        - people
+        - sites
       summary: "Return a person's site membership request for a site"
-      description: ""
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The id of the person"
-        required: true
-        type: "string"
-      - name: "siteId"
-        in: "path"
-        description: "The id of the site"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - $ref: "#/parameters/siteIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
     put:
       tags:
-      - "people"
-      - "sites"
+        - people
+        - sites
       summary: "Updates the message for a person's site membership request for a site"
-      description: ""
+      description: ''
       consumes:
-      - "application/json"
+        - application/json
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The id of the person"
-        required: true
-        type: "string"
-      - name: "siteId"
-        in: "path"
-        description: "The id of the site"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - $ref: "#/parameters/siteIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
     delete:
       tags:
-      - "people"
-      - "sites"
+        - people
+        - sites
       summary: "Cancel's a person's site membership request for a site"
-      description: ""
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The id of the person"
-        required: true
-        type: "string"
-      - name: "siteId"
-        in: "path"
-        description: "The id of the site"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
+        - $ref: "#/parameters/siteIdParam"
       responses:
-        200:
-          description: "Successful response"
-  /people/{personId}/sites:
+        '200':
+          description: Successful response
+  '/people/{personId}/sites':
     get:
       tags:
-      - "people"
-      - "sites"
+        - people
+        - sites
       summary: "Site membership information for 'personId'"
-      description: ""
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "personId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/personIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
   /sites:
     get:
       tags:
-      - "sites"
-      summary: "Returns a list of sites"
-      description: ""
-      operationId: "getSites"
+        - sites
+      summary: Returns a list of sites
+      description: ''
+      operationId: getSites
       parameters:
-      - name: "skipCount"
-        in: "query"
-        description: "An integer describing how many entities exist in the collection\
-          \ before those included in this list."
-        required: false
-        type: "integer"
-      - name: "maxItems"
-        in: "query"
-        description: "The maximum items request to return."
-        required: false
-        type: "integer"
+        - $ref: "#/parameters/skipCountParam"
+        - $ref: "#/parameters/maxItemsParam"
       produces:
-      - "application/json"
+        - application/json
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/SitePaging"
-  /sites/{siteId}:
+            $ref: '#/definitions/SitePaging'
+  '/sites/{siteId}':
     get:
       tags:
-      - "sites"
-      summary: "Returns site information for site siteId."
-      description: ""
+        - sites
+      summary: Returns site information for site siteId.
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "siteId"
-        in: "path"
-        description: "The unique short name for a site"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/siteIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/SiteEntry"
-  /sites/{siteId}/containers:
+            $ref: '#/definitions/SiteEntry'
+  '/sites/{siteId}/containers':
     get:
       tags:
-      - "sites"
+        - sites
       summary: "Returns a list of containers information for site identified by 'siteId'."
-      description: ""
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "siteId"
-        in: "path"
-        description: "The unique short name for a site"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/siteIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/SiteContainerPaging"
-  /sites/{siteId}/containers/{containerId}:
+            $ref: '#/definitions/SiteContainerPaging'
+  '/sites/{siteId}/containers/{containerId}':
     get:
       tags:
-      - "sites"
+        - sites
       summary: "Site container information for site 'siteId'."
-      description: ""
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "siteId"
-        in: "path"
-        description: "The unique short name for a site"
-        required: true
-        type: "string"
-      - name: "containerId"
-        in: "path"
-        description: "The unique container Id"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/siteIdParam"
+        - name: "containerId"
+          in: "path"
+          description: "The unique identifier of a site container."
+          required: true
+          type: "string"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/SiteContainerEntry"
-  /sites/{siteId}/members:
+            $ref: '#/definitions/SiteContainerEntry'
+  '/sites/{siteId}/members':
     get:
       tags:
-      - "sites"
-      summary: "Returns site membership information for siteId."
-      description: ""
+        - sites
+      summary: Returns site membership information for siteId.
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "siteId"
-        in: "path"
-        description: "The unique short name for a site"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/siteIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/SiteMemberPaging"
+            $ref: '#/definitions/SiteMemberPaging'
     post:
       tags:
-      - "sites"
-      summary: "Adds personId as a member of site siteId."
-      description: ""
+        - sites
+      summary: Adds personId as a member of site siteId.
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "siteId"
-        in: "path"
-        description: "The unique short name for a site"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "SITEMEMBER"
-        description: "Unique entity properties"
-        required: true
-        schema:
-          properties:
-            Role:
-              type: "string"
-            PersonId:
-              type: "string"
+        - $ref: "#/parameters/siteIdParam"
+        - in: body
+          name: SITEMEMBER
+          description: Unique entity properties
+          required: true
+          schema:
+            properties:
+              Role:
+                type: string
+              PersonId:
+                type: string
       responses:
-        200:
-          description: "Successful response"
-  /sites/{siteId}/members/{personId}:
+        '200':
+          description: Successful response
+  '/sites/{siteId}/members/{personId}':
     get:
       tags:
-      - "sites"
-      summary: "Returns site membership information for siteId and personId."
-      description: ""
+        - sites
+        - people
+      summary: Returns site membership information for siteId and personId.
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "siteId"
-        in: "path"
-        description: "The unique short name for a site"
-        required: true
-        type: "string"
-      - name: "personId"
-        in: "path"
-        description: "The id of the person"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/siteIdParam"
+        - $ref: "#/parameters/personIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/SiteMemberEntry"
-        404:
-          description: "If siteId or personId does not exist."
+            $ref: '#/definitions/SiteMemberEntry'
+        '404':
+          description: If siteId or personId does not exist.
     put:
       tags:
-      - "sites"
-      summary: "Update the membership of personId in site siteId."
-      description: ""
+        - sites
+      summary: Update the membership of personId in site siteId.
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "siteId"
-        in: "path"
-        description: "The unique short name for a site"
-        required: true
-        type: "string"
-      - name: "personId"
-        in: "path"
-        description: "The id of the person"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "SiteMemberRole"
-        description: "Unique entity properties"
-        required: true
-        schema:
-          properties:
-            role:
-              type: "string"
+        - $ref: "#/parameters/siteIdParam"
+        - $ref: "#/parameters/personIdParam"
+        - in: body
+          name: SiteMemberRole
+          description: Unique entity properties
+          required: true
+          schema:
+            properties:
+              role:
+                type: string
       responses:
-        200:
-          description: "Successful response"
-        400:
+        '200':
+          description: Successful response
+        '400':
           description: "If the role doesn't exist"
-        404:
+        '404':
           description: "If siteId or personId doesn't exist"
     delete:
       tags:
-      - "sites"
-      summary: "Removes personId as a member of site siteId."
-      description: ""
+        - sites
+      summary: Removes personId as a member of site siteId.
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "siteId"
-        in: "path"
-        description: "The unique short name for a site"
-        required: true
-        type: "string"
-      - name: "personId"
-        in: "path"
-        description: "The id of the person"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/siteIdParam"
+        - $ref: "#/parameters/personIdParam"
       responses:
-        204:
-          description: "Successful response"
-        404:
+        '204':
+          description: Successful response
+        '404':
           description: "If personId doesn't exist"
   /tags:
     get:
       tags:
-      - "tags"
-      summary: "Returns a list of tags"
-      description: ""
-      operationId: "getTags"
+        - tags
+      summary: Returns a list of tags
+      description: ''
+      operationId: getTags
       parameters:
-      - name: "skipCount"
-        in: "query"
-        description: "An integer describing how many entities exist in the collection\
-          \ before those included in this list."
-        required: false
-        type: "integer"
-      - name: "maxItems"
-        in: "query"
-        description: "The maximum items request to return."
-        required: false
-        type: "integer"
+        - $ref: "#/parameters/skipCountParam"
+        - $ref: "#/parameters/maxItemsParam"
       produces:
-      - "application/json"
+        - application/json
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/TagPaging"
-  /tags/{tagId}:
+            $ref: '#/definitions/TagPaging'
+  '/tags/{tagId}':
     get:
       tags:
-      - "tags"
-      summary: "Return the tag with tagId"
-      description: "Return the tag with tagId"
+        - tags
+      summary: Return the tag with tagId
+      description: Return the tag with tagId
       produces:
-      - "application/json"
-      operationId: "getTag"
+        - application/json
+      operationId: getTag
       parameters:
-      - name: "tagId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/tagIdParam"
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/TagEntry"
+            $ref: '#/definitions/TagEntry'
           examples:
             application/json:
-              id: "ed2444b5-d0c1-440b-b5b8-34a53e578091"
-              tag: "test tag 1"
-        404:
-          description: "Tag Not Found"
-        500:
-          description: "Error response"
+              id: ed2444b5-d0c1-440b-b5b8-34a53e578091
+              tag: test tag 1
+        '404':
+          description: Tag Not Found
+        '500':
+          description: Error response
           schema:
-            $ref: "#/definitions/Error"
+            $ref: '#/definitions/Error'
     put:
       tags:
-      - "tags"
-      summary: "Updates a tag by unique Id"
-      description: ""
+        - tags
+      summary: Updates a tag by unique Id
+      description: ''
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "tagId"
-        in: "path"
-        description: "The unique id must be a String. It is returned as an 'id' from\
-          \ the entity"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "TAG"
-        description: "Unique entity properties"
-        required: true
-        schema:
-          properties:
-            Tag:
-              type: "string"
-      responses:
-        200:
-          description: "Successful response"
+        - $ref: "#/parameters/tagIdParam"
+        - in: body
+          name: TAG
+          description: Unique entity properties
+          required: true
           schema:
-            $ref: "#/definitions/TagEntry"
-  /networks/{networkId}:
+            properties:
+              Tag:
+                type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/TagEntry'
+  '/networks/{networkId}':
     get:
       tags:
-      - "networks"
-      summary: "Retrieve information for a specific network."
-      operationId: "getNetwork"
+        - networks
+      summary: Retrieve information for a specific network.
+      operationId: getNetwork
       parameters:
-      - name: "networkId"
-        in: "path"
-        description: "network's unique id"
-        required: true
-        type: "string"
+        - $ref: "#/parameters/networkIdParam"
       produces:
-      - "application/json"
+        - application/json
       responses:
-        200:
-          description: "Successful response"
+        '200':
+          description: Successful response
           schema:
-            $ref: "#/definitions/PersonNetworkEntry"
-        404:
+            $ref: '#/definitions/PersonNetworkEntry'
+        '404':
           description: "If networkId doesn't exist"
 definitions:
   Error:
-    type: "object"
+    type: object
     properties:
       error:
-        type: "object"
+        type: object
         properties:
           errorKey:
-            type: "string"
+            type: string
           statusCode:
-            type: "integer"
-            format: "int32"
+            type: integer
+            format: int32
           briefSummary:
-            type: "string"
+            type: string
           stackTrace:
-            type: "string"
+            type: string
           descriptionURL:
-            type: "string"
+            type: string
   Pagination:
-    type: "object"
+    type: object
     properties:
       count:
-        type: "integer"
-        format: "int32"
+        type: integer
+        format: int32
       hasMoreItems:
-        type: "boolean"
+        type: boolean
       totalItems:
-        type: "integer"
-        format: "int64"
+        type: integer
+        format: int64
       skipCount:
-        type: "integer"
-        format: "int64"
+        type: integer
+        format: int64
       maxItems:
-        type: "integer"
-        format: "int64"
+        type: integer
+        format: int64
   SitePaging:
-    type: "object"
+    type: object
     properties:
       list:
-        type: "object"
+        type: object
         properties:
           pagination:
-            $ref: "#/definitions/Pagination"
+            $ref: '#/definitions/Pagination'
           entries:
-            type: "array"
+            type: array
             items:
-              type: "object"
-              $ref: "#/definitions/SiteEntry"
+              type: object
+              $ref: '#/definitions/SiteEntry'
   SiteEntry:
-    type: "object"
+    type: object
     properties:
       entry:
-        type: "object"
-        $ref: "#/definitions/Site"
+        type: object
+        $ref: '#/definitions/Site'
   Site:
-    type: "object"
+    type: object
     properties:
       id:
-        type: "string"
+        type: string
       guid:
-        type: "string"
+        type: string
       title:
-        type: "string"
+        type: string
       description:
-        type: "string"
+        type: string
       visibility:
-        type: "string"
+        type: string
         enum:
-        - "PRIVATE"
-        - "MODERATED"
-        - "PUBLIC"
+          - PRIVATE
+          - MODERATED
+          - PUBLIC
       role:
-        type: "string"
+        type: string
   SiteContainerPaging:
-    type: "object"
+    type: object
     properties:
       list:
-        type: "object"
+        type: object
         properties:
           pagination:
-            $ref: "#/definitions/Pagination"
+            $ref: '#/definitions/Pagination'
           entries:
-            type: "array"
+            type: array
             items:
-              type: "object"
-              $ref: "#/definitions/SiteContainerEntry"
+              type: object
+              $ref: '#/definitions/SiteContainerEntry'
   SiteContainerEntry:
-    type: "object"
+    type: object
     properties:
       entry:
-        type: "object"
-        $ref: "#/definitions/SiteContainer"
+        type: object
+        $ref: '#/definitions/SiteContainer'
   SiteContainer:
-    type: "object"
+    type: object
     properties:
       id:
-        type: "string"
+        type: string
       folderId:
-        type: "string"
+        type: string
   SiteMemberPaging:
-    type: "object"
+    type: object
     properties:
       list:
-        type: "object"
+        type: object
         properties:
           pagination:
-            $ref: "#/definitions/Pagination"
+            $ref: '#/definitions/Pagination'
           entries:
-            type: "array"
+            type: array
             items:
-              type: "object"
-              $ref: "#/definitions/SiteMemberEntry"
+              type: object
+              $ref: '#/definitions/SiteMemberEntry'
   SiteMemberEntry:
-    type: "object"
+    type: object
     properties:
       entry:
-        type: "object"
-        $ref: "#/definitions/SiteMember"
+        type: object
+        $ref: '#/definitions/SiteMember'
   SiteMember:
-    type: "object"
+    type: object
     required:
-    - "id"
-    - "role"
+      - id
+      - role
     properties:
       id:
-        type: "string"
+        type: string
       person:
-        type: "object"
-        $ref: "#/definitions/Person"
+        type: object
+        $ref: '#/definitions/Person'
       role:
-        type: "string"
+        type: string
   PersonEntry:
-    type: "object"
+    type: object
     properties:
       entry:
-        type: "object"
-        $ref: "#/definitions/Person"
+        type: object
+        $ref: '#/definitions/Person'
   Person:
-    type: "object"
+    type: object
     required:
-    - "id"
+      - id
     properties:
       id:
-        type: "string"
+        type: string
       firstName:
-        type: "string"
+        type: string
       lastName:
-        type: "string"
+        type: string
       description:
-        type: "string"
+        type: string
       avatarId:
-        type: "string"
+        type: string
       email:
-        type: "string"
+        type: string
       skypeId:
-        type: "string"
+        type: string
       googleId:
-        type: "string"
+        type: string
       instantMessageId:
-        type: "string"
+        type: string
       jobTitle:
-        type: "string"
+        type: string
       location:
-        type: "string"
+        type: string
       company:
-        type: "object"
-        $ref: "#/definitions/Company"
+        type: object
+        $ref: '#/definitions/Company'
       mobile:
-        type: "string"
+        type: string
       telephone:
-        type: "string"
+        type: string
       statusUpdatedAt:
-        type: "string"
-        format: "date"
+        type: string
+        format: date
       userStatus:
-        type: "string"
+        type: string
       enabled:
-        type: "boolean"
+        type: boolean
         default: true
       emailNotificationsEnabled:
-        type: "boolean"
+        type: boolean
   Company:
-    type: "object"
+    type: object
     properties:
       organization:
-        type: "string"
+        type: string
       address1:
-        type: "string"
+        type: string
       address2:
-        type: "string"
+        type: string
       address3:
-        type: "string"
+        type: string
       postcode:
-        type: "string"
+        type: string
       telephone:
-        type: "string"
+        type: string
       fax:
-        type: "string"
+        type: string
       email:
-        type: "string"
+        type: string
   CommentPaging:
-    type: "object"
+    type: object
     properties:
       list:
-        type: "object"
+        type: object
         properties:
           pagination:
-            $ref: "#/definitions/Pagination"
+            $ref: '#/definitions/Pagination'
           entries:
-            type: "array"
+            type: array
             items:
-              type: "object"
-              $ref: "#/definitions/CommentEntry"
+              type: object
+              $ref: '#/definitions/CommentEntry'
   CommentEntry:
-    type: "object"
+    type: object
     properties:
       entry:
-        type: "object"
-        $ref: "#/definitions/Comment"
+        type: object
+        $ref: '#/definitions/Comment'
   Comment:
-    type: "object"
+    type: object
     properties:
       id:
-        type: "string"
+        type: string
       content:
-        type: "string"
+        type: string
       createdBy:
-        type: "object"
-        $ref: "#/definitions/Person"
+        type: object
+        $ref: '#/definitions/Person'
       createdAt:
-        type: "string"
-        format: "date"
+        type: string
+        format: date
       edited:
-        type: "boolean"
+        type: boolean
       modifiedBy:
-        type: "object"
-        $ref: "#/definitions/Person"
+        type: object
+        $ref: '#/definitions/Person'
       modifiedAt:
-        type: "string"
-        format: "date"
+        type: string
+        format: date
       canEdit:
-        type: "boolean"
+        type: boolean
       canDelete:
-        type: "boolean"
+        type: boolean
   TagPaging:
-    type: "object"
+    type: object
     properties:
       list:
-        type: "object"
+        type: object
         properties:
           pagination:
-            $ref: "#/definitions/Pagination"
+            $ref: '#/definitions/Pagination'
           entries:
-            type: "array"
+            type: array
             items:
-              type: "object"
-              $ref: "#/definitions/TagEntry"
+              type: object
+              $ref: '#/definitions/TagEntry'
   TagEntry:
-    type: "object"
+    type: object
     properties:
       entry:
-        type: "object"
-        $ref: "#/definitions/Tag"
+        type: object
+        $ref: '#/definitions/Tag'
   Tag:
-    type: "object"
+    type: object
     required:
-    - "id"
-    - "tag"
+      - id
+      - tag
     properties:
       id:
-        type: "string"
+        type: string
       tag:
-        type: "string"
+        type: string
   PersonNetworkPaging:
-    type: "object"
+    type: object
     properties:
       list:
-        type: "object"
+        type: object
         properties:
           pagination:
-            $ref: "#/definitions/Pagination"
+            $ref: '#/definitions/Pagination'
           entries:
-            type: "array"
+            type: array
             items:
-              type: "object"
-              $ref: "#/definitions/PersonNetworkEntry"
+              type: object
+              $ref: '#/definitions/PersonNetworkEntry'
   PersonNetworkEntry:
-    type: "object"
+    type: object
     properties:
       entry:
-        type: "object"
-        $ref: "#/definitions/PersonNetwork"
+        type: object
+        $ref: '#/definitions/PersonNetwork'
   PersonNetwork:
-    type: "object"
-    description: "A network is the group of users and sites that belong to an organization.\
-      \ Networks are organized by email domain. When a user signs up for an Alfresco\
-      \ account , their email domain becomes their Home Network.\n"
+    type: object
+    description: >
+      A network is the group of users and sites that belong to an organization.
+      Networks are organized by email domain. When a user signs up for an
+      Alfresco account , their email domain becomes their Home Network.
     required:
-    - "id"
+      - id
     properties:
       id:
-        type: "string"
+        type: string
         description: "This network's unique id"
       homeNetwork:
-        type: "boolean"
-        description: "Is this the home network?"
+        type: boolean
+        description: Is this the home network?
       isEnabled:
-        type: "boolean"
+        type: boolean
       createdAt:
-        type: "string"
-        format: "date-time"
+        type: string
+        format: date-time
       paidNetwork:
-        type: "boolean"
+        type: boolean
       subscriptionLevel:
-        type: "string"
+        type: string
         enum:
-        - "Free"
-        - "Standard"
-        - "Enterprise"
+          - Free
+          - Standard
+          - Enterprise
       quotas:
-        type: "array"
+        type: array
         items:
-          type: "object"
-          $ref: "#/definitions/NetworkQuota"
+          type: object
+          $ref: '#/definitions/NetworkQuota'
   NetworkQuota:
-    type: "object"
-    description: "Limits and usage of each quota. A network will have quotas for File\
-      \ space, the number of sites in the network, the number of people in the network,\
-      \ and the number of network administrators\n"
+    type: object
+    description: >
+      Limits and usage of each quota. A network will have quotas for File space,
+      the number of sites in the network, the number of people in the network,
+      and the number of network administrators
     required:
-    - "id"
+      - id
     properties:
       id:
-        type: "string"
+        type: string
       limit:
-        type: "integer"
-        format: "int64"
+        type: integer
+        format: int64
       usage:
-        type: "integer"
-        format: "int6"
+        type: integer
+        format: int6
   RatingPaging:
-    type: "object"
+    type: object
     properties:
       list:
-        type: "object"
+        type: object
         properties:
           pagination:
-            $ref: "#/definitions/Pagination"
+            $ref: '#/definitions/Pagination'
           entries:
-            type: "array"
+            type: array
             items:
-              type: "object"
-              $ref: "#/definitions/RatingEntry"
+              type: object
+              $ref: '#/definitions/RatingEntry'
   RatingEntry:
-    type: "object"
+    type: object
     properties:
       entry:
-        type: "object"
-        $ref: "#/definitions/Rating"
+        type: object
+        $ref: '#/definitions/Rating'
   Rating:
-    type: "object"
-    description: "A person can rate an item of content by liking it. They can also\
-      \ remove their like of an item of content. API methods exist to get a list of\
-      \ ratings and to add a new rating.\n"
+    type: object
+    description: >
+      A person can rate an item of content by liking it. They can also remove
+      their like of an item of content. API methods exist to get a list of
+      ratings and to add a new rating.
     required:
-    - "id"
+      - id
     properties:
       id:
-        type: "string"
+        type: string
       aggregate:
-        type: "object"
+        type: object
         properties:
           numberOfRatings:
-            type: "integer"
+            type: integer
           average:
-            type: "integer"
+            type: integer
       ratedAt:
-        type: "string"
-        format: "date-time"
+        type: string
+        format: date-time
       myRating:
-        type: "boolean"
+        type: boolean
