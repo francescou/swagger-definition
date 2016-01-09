@@ -5,7 +5,6 @@ info:
   title: "Alfresco REST API (5.1)"
   contact:
     url: "http://docs.alfresco.com/5.1/pra/1/concepts/pra-resources.html"
-host: "localhost:8080"
 basePath: "/alfresco/api/-default-/public/alfresco/versions/1"
 consumes:
   - "application/json"
@@ -31,48 +30,55 @@ parameters:
     description: "The identifier of a node."
     required: true
     type: "string"
+    format: "uuid"
   personIdParam:
     name: "personId"
     in: "path"
     description: "The identifier of a person."
     required: true
     type: "string"
+    format: "uuid"
   siteIdParam:
     name: "siteId"
     in: "path"
     description: "The identifier of a site."
     required: true
     type: "string"
+    format: "uuid"
   tagIdParam:
     name: "tagId"
     in: "path"
     description: "The identifier of a tag."
     required: true
     type: "string"
+    format: "uuid"
   networkIdParam:
     name: "networkId"
     in: "path"
     description: "The identifier of a network."
     required: true
     type: "string"
+    format: "uuid"
   skipCountParam:
     name: "skipCount"
     in: "query"
     description: "An integer describing how many entities exist in the collection before those included in this list."
     required: false
     type: "integer"
+    format: "int32"
   maxItemsParam:
     name: "maxItems"
     in: "query"
     description: "The maximum items request to return."
     required: false
     type: "integer"
+    format: "int32"
   propertiesParam:
     name: "properties"
     in: "query"
     description: "The properties parameter is a comma-separated list of property names. You can use the properties parameter to restrict the returned properties."
     required: false
-    type: "integer"
+    type: "string"
 paths:
   /nodes/{nodeId}/comments:
     get:
@@ -374,6 +380,7 @@ paths:
     get:
       tags:
         - people
+      deprecated: true
       summary: "Get a person's favorite sites. Please note that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties' instead"
       description: "Get a person's favorite sites"
       produces:
@@ -389,6 +396,7 @@ paths:
     post:
       tags:
         - people
+      deprecated: true
       summary: "Add Person Favorite Site. Please note that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties' instead"
       description: Favorite a site
       produces:
@@ -407,6 +415,7 @@ paths:
     get:
       tags:
         - people
+      deprecated: true
       summary: "Returns site information of a person's favorite site. Please note that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties' instead"
       description: "Returns site information of a person's favorite site"
       produces:
@@ -422,6 +431,7 @@ paths:
     delete:
       tags:
         - people
+      deprecated: true
       summary: "Removes a site from a person's list of favorite sites. Please note that this method is deprecated and will be removed in the future, use '/people/{personId}/favorties' instead"
       description: "Removes a site from a person's list of favorite sites"
       produces:
@@ -430,7 +440,7 @@ paths:
         - $ref: "#/parameters/personIdParam"
         - $ref: "#/parameters/siteIdParam"
       responses:
-        '200':
+        '204':
           description: Successful response
         '404':
           description: If personId or siteId do not exist
@@ -648,7 +658,7 @@ paths:
         - $ref: "#/parameters/personIdParam"
         - $ref: "#/parameters/siteIdParam"
       responses:
-        '200':
+        '204':
           description: Successful response
   '/people/{personId}/sites':
     get:
@@ -1082,7 +1092,7 @@ definitions:
         type: string
       statusUpdatedAt:
         type: string
-        format: date
+        format: date-time
       userStatus:
         type: string
       enabled:
@@ -1140,7 +1150,7 @@ definitions:
         $ref: '#/definitions/Person'
       createdAt:
         type: string
-        format: date
+        format: date-time
       edited:
         type: boolean
       modifiedBy:
@@ -1148,7 +1158,7 @@ definitions:
         $ref: '#/definitions/Person'
       modifiedAt:
         type: string
-        format: date
+        format: date-time
       canEdit:
         type: boolean
       canDelete:
